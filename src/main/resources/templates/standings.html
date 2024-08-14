@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Tournament Standings</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="refresh" content="30">
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Standings</h1>
+
+    <div th:if="${not #lists.isEmpty(standings)}">
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Points</th>
+                <th>Ties</th>
+            </tr>
+            <tr th:each="standing : ${standings}">
+                <td th:text="${standing.name}"></td>
+                <td th:text="${standing.points}"></td>
+                <td th:text="${standing.ties}"></td>
+            </tr>
+        </table>
+    </div>
+
+    <div th:if="${#lists.isEmpty(standings)}">
+        <p>No standings available.</p>
+    </div>
+</div>
+</body>
+</html>

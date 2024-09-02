@@ -1,4 +1,4 @@
-package com.example.matchplay.domain;
+package com.example.matchplay.api;
 
 import java.util.List;
 

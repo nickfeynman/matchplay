@@ -1,4 +1,7 @@
-package com.example.matchplay;
+package com.example.matchplay.service;
+
+import com.example.matchplay.api.RoundDisplay;
+import com.example.matchplay.api.TournamentStanding;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,8 +9,24 @@ import java.util.List;
 public class TestTournamentService implements TournamentService {
 
     @Override
-    public List<TournamentStanding> getStandings(String tournamentId) {
+    public List<TournamentStanding> getStandings() {
         return fakeData();
+    }
+
+    @Override
+    public RoundDisplay getLatestRoundForActivePinId() {
+        return new RoundDisplay(
+                "Round 4",
+                "completed",
+                "Deadpool (Pro)",
+                List.of("Nicholas Berry", "Hunter Hayden", "Steve Penza", "Brenton Simpson"),
+                List.of("7.0", "3.0", "1.0", "5.0")
+        );
+    }
+
+    @Override
+    public void setActivePinId(Integer pinId) {
+
     }
 
     private List<TournamentStanding> fakeData() {
@@ -23,5 +42,6 @@ public class TestTournamentService implements TournamentService {
         standings.add(new TournamentStanding("Dennis Wiener", "5 pts.", "5:0:0"));
         return standings;
     }
+
 
 }

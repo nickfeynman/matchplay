@@ -58,7 +58,6 @@ public class MatchPlayController {
     @PostMapping("/active-pin-id")
     public ResponseEntity<String> processInteger(@Valid @RequestBody @NotNull Integer pinId) {
         this.tournamentService.setActivePinId(pinId);
-        // Return a meaningful response
         return ResponseEntity.ok("Processed value: " + pinId);
     }
 

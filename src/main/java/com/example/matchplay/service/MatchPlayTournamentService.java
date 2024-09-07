@@ -2,10 +2,14 @@ package com.example.matchplay.service;
 
 import com.example.matchplay.api.MatchPlayApi;
 import com.example.matchplay.api.RoundDisplay;
-import com.example.matchplay.api.TournamentStanding;
+import com.example.matchplay.api.Standing;
+import com.example.matchplay.api.StandingDisplay;
 import com.example.matchplay.configuration.MatchPlayConfigurationProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 import java.util.List;
 import java.util.Map;
@@ -27,15 +31,36 @@ public class MatchPlayTournamentService implements TournamentService {
         this.gameNameService = new GameNameService();
     }
 
+
+
     @Override
-    public List<TournamentStanding> getStandings() {
-        return null;
+    public List<StandingDisplay> getStandings() {
+        List<Standing> standings = this.matchPlayApi.getStandings(this.matchPlayConfigurationProperties.getTournamentId());
+        return convertToStandingDisplay(standings);
     }
 
+    public List<StandingDisplay> convertToStandingDisplay(List<Standing> standings) {
+        return standings.stream()
+                .map(this::convertStanding)
+                .sorted(Comparator.comparing(StandingDisplay::points).reversed()
+                        .thenComparing(StandingDisplay::position))
+                .collect(Collectors.toList());
+    }
+
+    private StandingDisplay convertStanding(Standing standing) {
+        String fullName = this.matchPlayApi.getUserApi().getUserName(standing.playerId());
+        String abbreviatedName = MatchPlayApi.abbreviateLastName(fullName);
+        return new StandingDisplay(
+                abbreviatedName,
+                standing.position(),
+                standing.points()
+        );
+    }
     @Override
     public RoundDisplay getLatestRoundForActivePinId() {
         String name = this.gameNameService.getGameName(getActivePinId());
         if (GameNameService.GAME_NAMES.contains(name)) {
+            logger.info("Getting latest round for tournament {} : pin {}", this.matchPlayConfigurationProperties.getTournamentId(), name);
             Integer tournamentId = this.matchPlayConfigurationProperties.getTournamentId();
             Map<String, List<RoundDisplay>> roundDisplays = matchPlayApi.getRoundDisplay(tournamentId);
             RoundDisplay roundDisplay = matchPlayApi.getLatestRoundForGame(name, roundDisplays);

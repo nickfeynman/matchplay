@@ -10,30 +10,70 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
+            background-color: #111; /* Dark background for better contrast */
+            color: #fff; /* Light text for visibility */
         }
 
         .container {
-            max-width: 800px;
+            max-width: 1200px; /* Wider for large TV screens */
             margin: 0 auto;
         }
 
         .round-info {
             margin-bottom: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3rem; /* Large font size for heading */
+            color: #ffcc00; /* Bright gold for the round name */
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        /* Updated status and game section */
+        p {
+            font-size: 2rem; /* Larger font size for status and game */
+            margin: 5px 0;
+            color: #66ccff; /* Complementary light blue for contrast */
+        }
+
+        p strong {
+            font-size: 2.2rem; /* Slightly larger for labels */
+            color: #ff9900; /* Bright orange for labels like "Status" and "Game" */
         }
 
         table {
             border-collapse: collapse;
             width: 100%;
+            font-size: 1.8rem; /* Larger text size for readability */
+            margin-top: 20px;
         }
 
         th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
+            border: 1px solid #444; /* Darker borders for contrast */
+            padding: 12px;
+            text-align: center;
         }
 
         th {
-            background-color: #f2f2f2;
+            background-color: #333; /* Darker header background */
+            color: #ffcc00; /* Gold text for headers */
+            font-size: 2rem; /* Bigger and more readable */
+        }
+
+        td {
+            background-color: #222; /* Slightly lighter background for rows */
+        }
+
+        /* Row highlights for better readability */
+        tr:nth-child(even) td {
+            background-color: #333;
+        }
+
+        /* Hover effect to make it interactive */
+        tr:hover td {
+            background-color: #555;
         }
     </style>
 </head>
@@ -49,7 +89,7 @@
     <div th:if="${roundDisplay != null and !roundDisplay.userNames.isEmpty()}">
         <table>
             <tr>
-                <th>Username</th>
+                <th>Name</th>
                 <th>Points</th>
             </tr>
             <tr th:each="userName, iterStat : ${roundDisplay.userNames}">

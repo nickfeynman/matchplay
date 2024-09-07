@@ -3,11 +3,13 @@ package com.example.matchplay.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.http.MediaType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -20,6 +22,8 @@ import java.util.stream.IntStream;
 @Component
 public class MatchPlayApi {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     public static final RoundDisplay DEFAULT_ROUND_DISPLAY = new RoundDisplay(
             "N/A", "N/A", "N/A", List.of("N/A"), List.of("N/A")
     );
@@ -27,50 +31,26 @@ public class MatchPlayApi {
     private final RestClient restClient;
     private Map<Integer, String> userNameCache = new HashMap<>();
 
-    public MatchPlayApi(RestClient.Builder restClientBuilder) {
+    private GamesApi gamesApi;
 
-        this.restClient = restClientBuilder.baseUrl("https://app.matchplay.events/api/")
-                .defaultHeaders(h -> {
-                    h.setBearerAuth("310|zLxG2hIAN6mIEQDilxRAiyVy2mzj3Do3Q7nBSemNa5893106");
-                    h.setContentType(MediaType.APPLICATION_JSON);
-                    h.setAccept(List.of(MediaType.APPLICATION_JSON));
-                })
-                .build();
+    private UserApi userApi;
+
+    private StandingsApi standingsApi;
+
+    public MatchPlayApi(RestClient restClient, GamesApi gamesApi, UserApi userApi, StandingsApi standingsApi) {
+        this.restClient = restClient;
+        this.gamesApi = gamesApi;
+        this.userApi = userApi;
+        this.standingsApi = standingsApi;
     }
 
-    public static Map<Integer, String> createGameNameMap(List<String> gameNames) {
-        return IntStream.rangeClosed(1, gameNames.size())
-                .boxed()
-                .collect(Collectors.toMap(
-                        i -> i,
-                        i -> gameNames.get(i - 1),
-                        (v1, v2) -> v1,
-                        java.util.LinkedHashMap::new
-                ));
+    public UserApi getUserApi() {
+        return userApi;
     }
 
-    public static String parseJsonToGameName(String json) {
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        // Parse the JSON string to a Map
-        Map<String, Object> jsonMap = null;
-        try {
-            jsonMap = objectMapper.readValue(json, new TypeReference<Map<String, Object>>() {
-            });
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-
-        // Get the "data" object from the map
-        Map<String, Object> dataMap = (Map<String, Object>) jsonMap.get("data");
-
-        // Get the "arena" object from the data map
-        Map<String, Object> arenaMap = (Map<String, Object>) dataMap.get("arena");
-
-        // Extract the name from the arena object
-        return (String) arenaMap.get("name");
+    public List<Standing> getStandings(Integer tournyId) {
+        return this.standingsApi.getStandings(tournyId);
     }
-
     public static List<Round> parseJsonToRounds(String json) {
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -99,24 +79,6 @@ public class MatchPlayApi {
         return sortedRounds;
     }
 
-    public static String parseJsonToUserName(String json) {
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        // Parse the JSON string to a Map
-        Map<String, Object> jsonMap = null;
-        try {
-            jsonMap = objectMapper.readValue(json, new TypeReference<Map<String, Object>>() {
-            });
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-
-        // Get the "user" object from the map
-        Map<String, Object> userMap = (Map<String, Object>) jsonMap.get("user");
-
-        // Extract the name from the user object
-        return (String) userMap.get("name");
-    }
 
     public static List<RoundDetails> parseJsonToRoundDetails(String json) {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -160,6 +122,7 @@ public class MatchPlayApi {
     }
 
     public RoundDisplay getLatestRoundForGame(String gameName, Map<String, List<RoundDisplay>> roundDisplayMap) {
+
         return roundDisplayMap.entrySet().stream()
                 .sorted((e1, e2) -> e2.getKey().compareTo(e1.getKey())) // Sort rounds in descending order
                 .map(entry -> entry.getValue().stream()
@@ -168,43 +131,38 @@ public class MatchPlayApi {
                         .orElse(null))
                 .filter(Objects::nonNull)
                 .findFirst()
+                .map(this::sortAndFormatRoundDisplay)
                 .orElse(DEFAULT_ROUND_DISPLAY);
     }
 
+    private RoundDisplay sortAndFormatRoundDisplay(RoundDisplay rd) {
+        List<String> sortedUserNames = new ArrayList<>();
+        List<String> sortedPoints = new ArrayList<>();
 
-//    public List<RoundDisplay> getRoundDisplay(Integer tournyId) {
-//        // Get all rounds and round details
-//        List<Round> rounds = getRounds(tournyId);
-//        List<RoundDetails> roundDetails = getRoundDetails(tournyId);
-//
-//        // Group RoundDetails by roundId
-//        Map<Integer, List<RoundDetails>> roundDetailsMap = roundDetails.stream()
-//                .collect(Collectors.groupingBy(RoundDetails::roundId));
-//
-//        // Transform rounds to RoundDisplay
-//        return rounds.stream().map(round -> {
-//            List<RoundDetails> details = roundDetailsMap.getOrDefault(round.roundId(), List.of());
-//            if (details.isEmpty()) {
-//                // If no details found, return a RoundDisplay with empty lists for userNames and points
-//                return new RoundDisplay(round.name(), round.status(), "", List.of(), List.of());
-//            }
-//
-//            // Combine information from all games in the round
-//            List<String> gameNames = new ArrayList<>();
-//            List<String> allUserNames = new ArrayList<>();
-//            List<String> allPoints = new ArrayList<>();
-//
-//            for (RoundDetails detail : details) {
-//                gameNames.add(getGameName(tournyId, detail.gameId()));
-//                allUserNames.addAll(detail.userIds().stream().map(this::getUserName).collect(Collectors.toList()));
-//                allPoints.addAll(detail.resultPoints().stream().map(Object::toString).collect(Collectors.toList()));
-//            }
-//
-//            String combinedGameNames = String.join(", ", gameNames);
-//
-//            return new RoundDisplay(round.name(), round.status(), combinedGameNames, allUserNames, allPoints);
-//        }).collect(Collectors.toList());
-//    }
+        // Combine userNames and points, sort them, and then separate them again
+        List<Map.Entry<String, String>> combinedList = IntStream.range(0, rd.userNames().size())
+                .mapToObj(i -> new AbstractMap.SimpleEntry<>(rd.userNames().get(i), rd.points().get(i)))
+                .sorted((e1, e2) -> Float.compare(Float.parseFloat(e2.getValue()), Float.parseFloat(e1.getValue())))
+                .collect(Collectors.toList());
+
+        for (Map.Entry<String, String> entry : combinedList) {
+            sortedUserNames.add(abbreviateLastName(entry.getKey()));
+            sortedPoints.add(entry.getValue());
+        }
+
+        return new RoundDisplay(rd.name(), rd.status(), rd.gameName(), sortedUserNames, sortedPoints);
+    }
+
+    public static String abbreviateLastName(String fullName) {
+        String[] nameParts = fullName.split("\\s+");
+        if (nameParts.length > 1) {
+            String firstName = nameParts[0];
+            String lastInitial = nameParts[nameParts.length - 1].substring(0, 1) + ".";
+            return firstName + " " + lastInitial;
+        }
+        return fullName;
+    }
+
 
     public List<Round> getRounds(Integer tournyId) {
         ResponseEntity<String> responseEntity = this.restClient.get()
@@ -222,45 +180,6 @@ public class MatchPlayApi {
                 .retrieve()
                 .toEntity(String.class);
         return parseJsonToRoundDetails(responseEntity.getBody());
-    }
-
-    public String getGameName(Integer tournyId, Integer gameId) {
-
-        GameKey key = new GameKey(tournyId, gameId);
-
-        // Check if the game name is already in the cache
-        if (gameNameCache.containsKey(key)) {
-            return gameNameCache.get(key);
-        }
-
-        ResponseEntity<String> responseEntity = this.restClient.get()
-                .uri("/tournaments/" + tournyId + "/games/" + gameId)
-                .retrieve()
-                .toEntity(String.class);
-
-        String gameName = parseJsonToGameName(responseEntity.getBody());
-
-        // Store the result in the cache
-        gameNameCache.put(key, gameName);
-
-        return gameName;
-    }
-
-    public String getUserName(Integer userId) {
-        if (userNameCache.containsKey(userId)) {
-            return userNameCache.get(userId);
-        }
-
-        ResponseEntity<String> responseEntity = this.restClient.get()
-                .uri("/users/" + userId)
-                .retrieve()
-                .toEntity(String.class);
-        String userName = parseJsonToUserName(responseEntity.getBody());
-
-        // Store the result in the cache
-        userNameCache.put(userId, userName);
-
-        return userName;
     }
 
     /**
@@ -289,9 +208,9 @@ public class MatchPlayApi {
 
                     // Create a RoundDisplay for each game in the round
                     return details.stream().map(detail -> {
-                        String gameName = getGameName(tournyId, detail.gameId());
+                        String gameName = this.gamesApi.getGameName(tournyId, detail.gameId());
                         List<String> userNames = detail.userIds().stream()
-                                .map(this::getUserName)
+                                .map(this.userApi::getUserName)
                                 .collect(Collectors.toList());
                         List<String> points = detail.resultPoints().stream()
                                 .map(Object::toString)
@@ -326,6 +245,14 @@ public class MatchPlayApi {
         @Override
         public int hashCode() {
             return Objects.hash(tournyId, gameId);
+        }
+
+        @Override
+        public String toString() {
+            return "GameKey{" +
+                    "tournyId=" + tournyId +
+                    ", gameId=" + gameId +
+                    '}';
         }
     }
 }

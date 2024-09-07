@@ -1,24 +1,63 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Tournament Standings</title>
+    <title>Standings Display</title>
     <meta charset="UTF-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <meta content="30" http-equiv="refresh">
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #111; /* Dark background for better contrast */
+            color: #fff; /* Light text for visibility */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 3rem; /* Large font size for heading */
+            color: #ffcc00; /* Bright gold for the heading */
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
         table {
             border-collapse: collapse;
             width: 100%;
+            font-size: 1.8rem; /* Larger text size for readability */
+            margin-top: 20px;
         }
 
         th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
+            border: 1px solid #444; /* Darker borders for contrast */
+            padding: 12px;
+            text-align: center;
         }
 
         th {
-            background-color: #f2f2f2;
+            background-color: #333; /* Darker header background */
+            color: #ffcc00; /* Gold text for headers */
+            font-size: 2rem; /* Bigger and more readable */
+        }
+
+        td {
+            background-color: #222; /* Slightly lighter background for rows */
+        }
+
+        /* Row highlights for better readability */
+        tr:nth-child(even) td {
+            background-color: #333;
+        }
+
+        /* Hover effect to make it interactive */
+        tr:hover td {
+            background-color: #555;
         }
     </style>
 </head>
@@ -27,17 +66,17 @@
 <div class="container">
     <h1>Standings</h1>
 
-    <div th:if="${not #lists.isEmpty(standings)}">
+    <div th:if="${!#lists.isEmpty(standings)}">
         <table>
             <tr>
                 <th>Name</th>
+                <th>Position</th>
                 <th>Points</th>
-                <th>Ties</th>
             </tr>
             <tr th:each="standing : ${standings}">
-                <td th:text="${standing.name}"></td>
+                <td th:text="${standing.playerId}"></td>
+                <td th:text="${standing.position}"></td>
                 <td th:text="${standing.points}"></td>
-                <td th:text="${standing.ties}"></td>
             </tr>
         </table>
     </div>
@@ -46,5 +85,6 @@
         <p>No standings available.</p>
     </div>
 </div>
+
 </body>
 </html>

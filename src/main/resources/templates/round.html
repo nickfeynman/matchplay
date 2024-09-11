@@ -5,75 +5,76 @@
     <meta charset="UTF-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <meta content="60" http-equiv="refresh">
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const eventSource = new EventSource('/sse-stream');
+            eventSource.onmessage = function(event) {
+                if (event.data === 'refresh') {
+                    location.reload();
+                }
+            };
+            eventSource.onerror = function(error) {
+                console.error('SSE error:', error);
+                eventSource.close();
+            };
+        });
+    </script>
     <style>
-        body {
+        .container {
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+            background-color: #000;
+            color: #fff;
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #111; /* Dark background for better contrast */
-            color: #fff; /* Light text for visibility */
+            padding: 10px;
         }
 
-        .container {
-            max-width: 1200px; /* Wider for large TV screens */
-            margin: 0 auto;
+        #round-name {
+            color: #FFD700;
+            font-size: 24px;
+            margin: 0;
+            padding: 0;
         }
 
         .round-info {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        h1 {
-            font-size: 3rem; /* Large font size for heading */
-            color: #ffcc00; /* Bright gold for the round name */
-            text-transform: uppercase;
             margin-bottom: 10px;
         }
 
-        /* Updated status and game section */
-        p {
-            font-size: 2rem; /* Larger font size for status and game */
+        .round-info p {
             margin: 5px 0;
-            color: #66ccff; /* Complementary light blue for contrast */
+            font-size: 14px;
         }
 
-        p strong {
-            font-size: 2.2rem; /* Slightly larger for labels */
-            color: #ff9900; /* Bright orange for labels like "Status" and "Game" */
+        .round-info strong {
+            color: #FFA500;
         }
 
         table {
-            border-collapse: collapse;
             width: 100%;
-            font-size: 1.8rem; /* Larger text size for readability */
-            margin-top: 20px;
+            border-collapse: collapse;
         }
 
         th, td {
-            border: 1px solid #444; /* Darker borders for contrast */
-            padding: 12px;
-            text-align: center;
+            padding: 5px 8px;
+            text-align: left;
+            border-bottom: 1px solid #333;
         }
 
         th {
-            background-color: #333; /* Darker header background */
-            color: #ffcc00; /* Gold text for headers */
-            font-size: 2rem; /* Bigger and more readable */
+            background-color: #222;
+            font-weight: bold;
+            color: #FFD700;
         }
 
-        td {
-            background-color: #222; /* Slightly lighter background for rows */
+        tr:nth-child(even) {
+            background-color: #111;
         }
 
-        /* Row highlights for better readability */
-        tr:nth-child(even) td {
-            background-color: #333;
-        }
-
-        /* Hover effect to make it interactive */
-        tr:hover td {
-            background-color: #555;
+        /* Adjust font size and row height to fit more rows */
+        th, td {
+            font-size: 20px;
+            line-height: 1.2;
         }
     </style>
 </head>

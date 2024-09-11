@@ -25,9 +25,12 @@ public class MatchPlayController {
 
     private TournamentService tournamentService;
 
+    private SseController sseController;
+
     @Autowired
-    public MatchPlayController(TournamentService tournamentService) {
+    public MatchPlayController(TournamentService tournamentService, SseController sseController) {
         this.tournamentService = tournamentService;
+        this.sseController = sseController;
         logger.info("Version 2");
     }
 
@@ -49,7 +52,6 @@ public class MatchPlayController {
 
     @GetMapping("/round")
     public String round(Model model) {
-
         logger.debug("calling round...");
         //Integer tournyId = 149146; //149145;
         RoundDisplay roundDisplay = this.tournamentService.getLatestRoundForActivePinId();
@@ -62,7 +64,11 @@ public class MatchPlayController {
 
     @PostMapping("/active-pin-id")
     public ResponseEntity<String> processInteger(@Valid @RequestBody @NotNull Integer pinId) {
+        logger.info("Changing active pin id to " + pinId);
         this.tournamentService.setActivePinId(pinId);
+        logger.info("Refreshing browser");
+        this.sseController.sendSSEEvent("refresh");
+        logger.info("Changed");
         return ResponseEntity.ok("Processed value: " + pinId);
     }
 

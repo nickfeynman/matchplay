@@ -7,9 +7,6 @@
     <cache alias="gameNameCache">
         <key-type>java.lang.Integer</key-type>
         <value-type>java.lang.String</value-type>
-        <expiry>
-            <ttl unit="minutes">10</ttl>
-        </expiry>
         <resources>
             <heap unit="entries">1000</heap>
             <disk unit="MB" persistent="true">100</disk>

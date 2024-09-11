@@ -6,58 +6,59 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <meta content="30" http-equiv="refresh">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #111; /* Dark background for better contrast */
-            color: #fff; /* Light text for visibility */
-        }
-
         .container {
-            max-width: 1200px;
+            width: 100%;
+            max-width: 400px;
             margin: 0 auto;
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
         }
 
         h1 {
-            font-size: 3rem; /* Large font size for heading */
-            color: #ffcc00; /* Bright gold for the heading */
-            text-transform: uppercase;
-            margin-bottom: 20px;
             text-align: center;
+            color: #FFD700;
+            font-size: 24px;
+            margin: 10px 0;
         }
 
         table {
-            border-collapse: collapse;
             width: 100%;
-            font-size: 1.8rem; /* Larger text size for readability */
-            margin-top: 20px;
+            border-collapse: collapse;
         }
 
         th, td {
-            border: 1px solid #444; /* Darker borders for contrast */
-            padding: 12px;
-            text-align: center;
+            padding: 4px 8px;
+            text-align: left;
+            border-bottom: 1px solid #333;
         }
 
         th {
-            background-color: #333; /* Darker header background */
-            color: #ffcc00; /* Gold text for headers */
-            font-size: 2rem; /* Bigger and more readable */
+            background-color: #222;
+            font-weight: bold;
         }
 
-        td {
-            background-color: #222; /* Slightly lighter background for rows */
+        tr:nth-child(even) {
+            background-color: #111;
         }
 
-        /* Row highlights for better readability */
-        tr:nth-child(even) td {
-            background-color: #333;
+        /* Adjust font size and row height to fit more rows */
+        th, td {
+            font-size: 22px;
+            line-height: 1.2;
         }
 
-        /* Hover effect to make it interactive */
-        tr:hover td {
-            background-color: #555;
+        /* Add scrolling if content exceeds container height */
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        /* Ensure header stays fixed while scrolling */
+        thead {
+            position: sticky;
+            top: 0;
+            background-color: #222;
         }
     </style>
 </head>

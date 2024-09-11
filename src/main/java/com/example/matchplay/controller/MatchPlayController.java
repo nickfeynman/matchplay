@@ -40,21 +40,23 @@ public class MatchPlayController {
 
     @GetMapping("/standings")
     public String standings(Model model) {
-        logger.info("called standings...");
+        logger.debug("calling standings...");
         List<StandingDisplay> standingDisplays = tournamentService.getStandings();
         model.addAttribute("standings", standingDisplays);
+        logger.debug("called standings");
         return "standings";
     }
 
     @GetMapping("/round")
     public String round(Model model) {
 
-        logger.info("called round...");
+        logger.debug("calling round...");
         //Integer tournyId = 149146; //149145;
         RoundDisplay roundDisplay = this.tournamentService.getLatestRoundForActivePinId();
 //		Map<String, List<RoundDisplay>> roundDisplays = matchPlayApi.getRoundDisplay(tournyId);
 //		RoundDisplay roundDisplay = this.matchPlayApi.getLatestRoundForGame("The Shadow", roundDisplays);
         model.addAttribute("roundDisplay", roundDisplay);
+        logger.debug("called round");
         return "round";
     }
 

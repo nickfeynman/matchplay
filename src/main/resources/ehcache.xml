@@ -16,6 +16,17 @@
         </resources>
     </cache>
 
+    <!-- playerIdUserIdCache -->
+
+    <cache alias="playerIdUserIdCache">
+        <key-type>java.lang.Integer</key-type>
+        <value-type>java.lang.Integer</value-type>
+        <resources>
+            <heap unit="entries">1000</heap>
+            <disk unit="MB" persistent="true">100</disk>
+        </resources>
+    </cache>
+
     <cache alias="userNameCache">
         <key-type>java.lang.Integer</key-type>
         <value-type>java.lang.String</value-type>

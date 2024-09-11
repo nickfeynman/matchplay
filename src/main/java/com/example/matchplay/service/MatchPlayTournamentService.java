@@ -42,9 +42,11 @@ public class MatchPlayTournamentService implements TournamentService {
     public List<StandingDisplay> convertToStandingDisplay(List<Standing> standings) {
         return standings.stream()
                 .map(this::convertStanding)
-                .sorted(Comparator.comparing(StandingDisplay::points).reversed()
-                        .thenComparing(StandingDisplay::position))
+                .sorted(Comparator.comparingInt(StandingDisplay::position))  // This is the key change
                 .collect(Collectors.toList());
+//                .sorted(Comparator.comparing(StandingDisplay::points).reversed()
+//                        .thenComparing(StandingDisplay::position))
+//                .collect(Collectors.toList());
     }
 
     private StandingDisplay convertStanding(Standing standing) {

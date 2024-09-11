@@ -34,14 +34,11 @@ public class StandingsApi {
 
     private List<Standing> parseJsonToStandings(String jsonString) {
         ObjectMapper objectMapper = new ObjectMapper();
-
         try {
             List<Standing> standings = objectMapper.readValue(jsonString, new TypeReference<List<Standing>>() {});
-
-            // Print the deserialized standings
-            for (Standing standing : standings) {
-                System.out.println(standing);
-            }
+//            for (Standing standing : standings) {
+//                System.out.println(standing);
+//            }
             return standings;
         } catch (Exception e) {
             e.printStackTrace();

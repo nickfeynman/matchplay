@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.client.RestClient;
 
 public class TournamentApi {
@@ -20,7 +21,9 @@ public class TournamentApi {
         this.objectMapper.registerModule(new JavaTimeModule());
     }
 
+    @Cacheable(value = "playerIdUserIdCache", key = "#playerId")
     public int getUserIdFromPlayerId(int playerId, Integer tournamentId) {
+        logger.info("Retrieving userId for playerid {}", playerId);
         Tournament tournament = getTournament(tournamentId);
         Tournament.Player player = getPlayerById(tournament, playerId);
         return player.claimedBy();

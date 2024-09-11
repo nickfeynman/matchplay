@@ -1,6 +1,7 @@
 package com.example.matchplay.controller;
 
 import com.example.matchplay.api.RoundDisplay;
+import com.example.matchplay.api.StandingDisplay;
 import com.example.matchplay.service.TournamentService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 @Controller
 public class MatchPlayController {
@@ -38,8 +41,8 @@ public class MatchPlayController {
     @GetMapping("/standings")
     public String standings(Model model) {
         logger.info("called standings...");
-        var tournamentStandings = tournamentService.getStandings();
-        model.addAttribute("standings", tournamentStandings);
+        List<StandingDisplay> standingDisplays = tournamentService.getStandings();
+        model.addAttribute("standings", standingDisplays);
         return "standings";
     }
 

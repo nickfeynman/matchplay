@@ -27,14 +27,7 @@ public class GamesApi {
     @Cacheable(value = "gameNameCache", key = "#gameId")
     public String getGameName(Integer tournyId, Integer gameId) {
         logger.info("Cache miss for tournyId: {} and gameId: {}", tournyId, gameId);
-//        GameKey key = new GameKey(tournyId, gameId);
-//
-//        // Check if the game name is already in the cache
-//        if (gameNameCache.containsKey(key)) {
-//            String gameName = gameNameCache.get(key);
-//            logger.info("Using Cached GameKey {} , GameName {} ", key, gameName);
-//            return gameName;
-//        }
+
 
         ResponseEntity<String> responseEntity = this.restClient.get()
                 .uri("/tournaments/" + tournyId + "/games/" + gameId)
@@ -46,10 +39,6 @@ public class GamesApi {
         logger.info("Retrieved GameName: {} for tournyId: {} and gameId: {}", gameName, tournyId, gameId);
         return gameName;
 
-        // Store the result in the cache
-//        gameNameCache.put(key, gameName);
-//        logger.info("Caching GameKey {} , GameName {} ", key, gameName);
-//        return gameName;
     }
 
     public static String parseJsonToGameName(String json) {

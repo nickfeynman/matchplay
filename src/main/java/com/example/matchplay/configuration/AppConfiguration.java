@@ -3,6 +3,7 @@ package com.example.matchplay.configuration;
 import com.example.matchplay.api.GamesApi;
 import com.example.matchplay.api.MatchPlayApi;
 import com.example.matchplay.api.StandingsApi;
+import com.example.matchplay.api.TournamentApi;
 import com.example.matchplay.api.UserApi;
 import com.example.matchplay.service.MatchPlayTournamentService;
 import com.example.matchplay.service.TournamentService;
@@ -23,7 +24,6 @@ public class AppConfiguration {
 
     @Bean
     public TournamentService tournamentService(MatchPlayApi matchPlayApi, MatchPlayConfigurationProperties matchPlayConfigurationProperties) {
-        //return new TestTournamentService();
         return new MatchPlayTournamentService(matchPlayApi, matchPlayConfigurationProperties);
     }
 
@@ -39,8 +39,9 @@ public class AppConfiguration {
     }
 
     @Bean
-    public MatchPlayApi matchPlayApi(RestClient restClient, GamesApi gamesApi, UserApi userApi, StandingsApi standingsApi) {
-        return new MatchPlayApi(restClient, gamesApi, userApi, standingsApi);
+    public MatchPlayApi matchPlayApi(RestClient restClient, GamesApi gamesApi, UserApi userApi, StandingsApi standingsApi,
+                                     TournamentApi tournamentApi) {
+        return new MatchPlayApi(restClient, gamesApi, userApi, standingsApi, tournamentApi);
     }
 
     @Bean
@@ -59,4 +60,8 @@ public class AppConfiguration {
     }
 
 
+    @Bean
+    public TournamentApi tournamentApi(RestClient restClient) {
+        return new TournamentApi(restClient);
+    }
 }

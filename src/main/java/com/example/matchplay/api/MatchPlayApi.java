@@ -37,11 +37,18 @@ public class MatchPlayApi {
 
     private StandingsApi standingsApi;
 
-    public MatchPlayApi(RestClient restClient, GamesApi gamesApi, UserApi userApi, StandingsApi standingsApi) {
+    private TournamentApi tournamentApi;
+
+    public MatchPlayApi(RestClient restClient, GamesApi gamesApi, UserApi userApi, StandingsApi standingsApi, TournamentApi tournamentApi) {
         this.restClient = restClient;
         this.gamesApi = gamesApi;
         this.userApi = userApi;
         this.standingsApi = standingsApi;
+        this.tournamentApi = tournamentApi;
+    }
+
+    public TournamentApi getTournamentApi() {
+        return tournamentApi;
     }
 
     public UserApi getUserApi() {

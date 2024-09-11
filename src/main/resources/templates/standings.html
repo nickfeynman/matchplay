@@ -74,7 +74,7 @@
                 <th>Points</th>
             </tr>
             <tr th:each="standing : ${standings}">
-                <td th:text="${standing.playerId}"></td>
+                <td th:text="${standing.name}"></td>
                 <td th:text="${standing.position}"></td>
                 <td th:text="${standing.points}"></td>
             </tr>

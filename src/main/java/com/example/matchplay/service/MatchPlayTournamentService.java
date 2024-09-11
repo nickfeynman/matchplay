@@ -48,7 +48,9 @@ public class MatchPlayTournamentService implements TournamentService {
     }
 
     private StandingDisplay convertStanding(Standing standing) {
-        String fullName = this.matchPlayApi.getUserApi().getUserName(standing.playerId());
+        int userId = this.matchPlayApi.getTournamentApi().getUserIdFromPlayerId(standing.playerId(),
+                this.matchPlayConfigurationProperties.getTournamentId());
+        String fullName = this.matchPlayApi.getUserApi().getUserName(userId);
         String abbreviatedName = MatchPlayApi.abbreviateLastName(fullName);
         return new StandingDisplay(
                 abbreviatedName,

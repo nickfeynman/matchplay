@@ -1,5 +1,6 @@
 package com.example.matchplay.api;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.List;
 
 public record Tournament(@JsonProperty("data") TournamentData data) {
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public record TournamentData(
             long tournamentId,
             String name,
@@ -29,7 +31,7 @@ public record Tournament(@JsonProperty("data") TournamentData data) {
             String link,
             Long linkedTournamentId,
             Integer estimatedTgp,
-            Integer prizePool,
+            //Integer prizePool,
             Organizer organizer,
             List<Player> players,
             String seeding,

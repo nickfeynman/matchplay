@@ -1,5 +1,6 @@
 package com.example.matchplay.controller;
 
+import com.example.matchplay.api.BestScoresDisplay;
 import com.example.matchplay.api.RoundDisplay;
 import com.example.matchplay.api.StandingDisplay;
 import com.example.matchplay.service.TournamentService;
@@ -60,6 +61,15 @@ public class MatchPlayController {
         model.addAttribute("roundDisplay", roundDisplay);
         logger.debug("called round");
         return "round";
+    }
+
+    @GetMapping("/bestscores")
+    public String bestScores(Model model) {
+        logger.debug("calling bestscores...");
+        List<BestScoresDisplay> bestScores = this.tournamentService.getBestScoresForActivePinId();
+        model.addAttribute("bestScores", bestScores);
+        logger.debug("called bestscores");
+        return "bestscores";
     }
 
     @PostMapping("/active-pin-id")

@@ -41,11 +41,13 @@ public class MatchPlayApiTests {
                         "Round 4",
                         "completed",
                         "Deadpool (Pro)",
-                        List.of("Nicholas Berry", "Hunter Hayden", "Steve Penza", "Brenton Simpson"),
-                        List.of("7.0", "3.0", "1.0", "5.0")
+                        List.of("Nicholas B.", "Brenton S.", "Hunter H.", "Steve P."),  // sorted by score
+                        List.of("7.0", "5.0", "3.0", "1.0")  // sorted by score
                 );
 
     }
+
+
 
 
 //    @Test

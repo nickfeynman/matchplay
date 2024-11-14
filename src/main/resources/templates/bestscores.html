@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Best Scores Display</title>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta content="30" http-equiv="refresh">
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const eventSource = new EventSource('/sse-stream');
+            eventSource.onmessage = function(event) {
+                if (event.data === 'refresh') {
+                    location.reload();
+                }
+            };
+            eventSource.onerror = function(error) {
+                console.error('SSE error:', error);
+                eventSource.close();
+            };
+        });
+    </script>
+    <style>
+        .container {
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            padding: 10px;
+        }
+
+        h1 {
+            color: #FFD700;
+            font-size: 24px;
+            margin: 0;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 5px 8px;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+
+        th {
+            background-color: #222;
+            font-weight: bold;
+            color: #FFD700;
+        }
+
+        tr:nth-child(even) {
+            background-color: #111;
+        }
+
+        /* Adjust font size and row height to fit more rows */
+        th, td {
+            font-size: 20px;
+            line-height: 1.2;
+        }
+
+        /* Add scrolling if content exceeds container height */
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        /* Ensure header stays fixed while scrolling */
+        thead {
+            position: sticky;
+            top: 0;
+            background-color: #222;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Best Scores</h1>
+
+    <div th:if="${!#lists.isEmpty(bestScores)}">
+        <table>
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Score</th>
+                <th>Points</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="score : ${bestScores}">
+                <td th:text="${score.name}"></td>
+                <td th:text="${score.score}"></td>
+                <td th:text="${score.points}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:if="${#lists.isEmpty(bestScores)}">
+        <p>No best scores available.</p>
+    </div>
+</div>
+
+</body>
+</html>

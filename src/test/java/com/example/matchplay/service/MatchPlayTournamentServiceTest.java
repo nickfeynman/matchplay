@@ -1,8 +1,12 @@
 package com.example.matchplay.service;
 
+import com.example.matchplay.api.BestScoresDisplay;
 import com.example.matchplay.api.RoundDisplay;
 import com.example.matchplay.configuration.MatchPlayConfigurationProperties;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -14,6 +18,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MatchPlayTournamentServiceTest {
 
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     @Autowired
     private TournamentService tournamentService;
 
@@ -23,8 +29,8 @@ public class MatchPlayTournamentServiceTest {
     @Test
     public void testTournamentService() {
         assertThat(tournamentService).isNotNull();
-        assertThat(matchPlayConfigurationProperties.getTournamentId()).isEqualTo(149146);
-        tournamentService.setActivePinId(2);
+        assertThat(matchPlayConfigurationProperties.getTournamentId()).isEqualTo(149146);  // old gebhards tournament
+        tournamentService.setActivePinId(3);
         RoundDisplay roundDisplay = tournamentService.getLatestRoundForActivePinId();
 
         assertThat(roundDisplay)
@@ -39,9 +45,37 @@ public class MatchPlayTournamentServiceTest {
                 .containsExactly(
                         "Round 4",
                         "completed",
-                        "Deadpool (Pro)",
-                        List.of("Nicholas Berry", "Hunter Hayden", "Steve Penza", "Brenton Simpson"),
-                        List.of("7.0", "3.0", "1.0", "5.0")
+                        "Whirlwind",
+                        List.of("Adam R.", "Peter L.", "Glenn G.", "Matt G."),  // sorted by score
+                        List.of("7.0", "5.0", "3.0", "1.0")  // sorted by score
                 );
     }
+
+    @Test
+    public void testGetBestScoresForArena() {
+        // Using actual tournament and arena IDs from the API
+        List<BestScoresDisplay> bestScoresForArena = tournamentService.getBestScoresForArena(129750, 80475);
+
+        assertThat(bestScoresForArena)
+                .isNotEmpty()
+                .allSatisfy(score -> {
+                    assertThat(score).isNotNull();
+                    assertThat(score.name()).isNotEmpty()
+                            .matches("[A-Za-z]+ [A-Z]\\.");  // Matches pattern like "John D."
+                    assertThat(score.score())
+                            .isNotEmpty()
+                            .matches("\\d{1,3}(,\\d{3})*");  // Matches formatted numbers like "91,287,230"
+                    // Points may be empty for some scores, but if present should be in format "###.##"
+                    if (!score.points().isEmpty()) {
+                        assertThat(score.points()).matches("\\d+\\.\\d{2}");
+                    }
+                });
+
+        // Log the actual results to help refine test assertions
+        for (BestScoresDisplay score : bestScoresForArena) {
+            logger.info("Best score entry - Name: {}, Score: {}, Points: {}",
+                    score.name(), score.score(), score.points());
+        }
+    }
+
 }

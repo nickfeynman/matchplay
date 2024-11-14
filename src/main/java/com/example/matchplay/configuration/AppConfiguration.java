@@ -2,6 +2,7 @@ package com.example.matchplay.configuration;
 
 import com.example.matchplay.api.GamesApi;
 import com.example.matchplay.api.MatchPlayApi;
+import com.example.matchplay.api.SinglePlayerGameApi;
 import com.example.matchplay.api.StandingsApi;
 import com.example.matchplay.api.TournamentApi;
 import com.example.matchplay.api.UserApi;
@@ -23,8 +24,12 @@ import java.util.List;
 public class AppConfiguration {
 
     @Bean
-    public TournamentService tournamentService(MatchPlayApi matchPlayApi, MatchPlayConfigurationProperties matchPlayConfigurationProperties) {
-        return new MatchPlayTournamentService(matchPlayApi, matchPlayConfigurationProperties);
+    public TournamentService tournamentService(MatchPlayApi matchPlayApi,
+                                               SinglePlayerGameApi singlePlayerGameApi,
+                                               MatchPlayConfigurationProperties matchPlayConfigurationProperties) {
+        return new MatchPlayTournamentService(matchPlayApi,
+                singlePlayerGameApi,
+                matchPlayConfigurationProperties);
     }
 
     @Bean

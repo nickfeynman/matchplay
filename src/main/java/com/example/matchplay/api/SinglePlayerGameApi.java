@@ -40,6 +40,9 @@ public class SinglePlayerGameApi {
     public List<SinglePlayerGame> getSinglePlayerGames(Integer tourneyId, Integer arenaId) {
         ResponseEntity<String> responseEntity = this.restClient.get()
                 .uri("/tournaments/" + tourneyId + "/single-player-games?arena=" + arenaId)
+                .header("Cache-Control", "no-cache, no-store, must-revalidate")
+                .header("Pragma", "no-cache")
+                .header("Expires", "0")
                 .retrieve()
                 .toEntity(String.class);
         return parseJsonToSinglePlayerGames(responseEntity.getBody());

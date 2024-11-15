@@ -2,6 +2,7 @@ package com.example.matchplay.service;
 
 import com.example.matchplay.api.BestScoresDisplay;
 import com.example.matchplay.api.RoundDisplay;
+import com.example.matchplay.api.StandingDisplay;
 import com.example.matchplay.configuration.MatchPlayConfigurationProperties;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -14,7 +15,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(properties = {"matchplay.tournament-id=149146"})
+@SpringBootTest(properties = {"matchplay.tournament-id=160189"})
 public class MatchPlayTournamentServiceTest {
 
 
@@ -25,6 +26,15 @@ public class MatchPlayTournamentServiceTest {
 
     @Autowired
     private MatchPlayConfigurationProperties matchPlayConfigurationProperties;
+
+    @Test
+    public void testStandings() {
+        var standings = this.tournamentService.getStandings();
+        for (StandingDisplay standing : standings) {
+            System.out.println(standing);
+        }
+    }
+
 
     @Test
     public void testTournamentService() {

@@ -29,7 +29,7 @@ public class GamesApiTests {
     @Test
     @Disabled("Round behavior seems broken now, but not rounds in best single play tourny")
     void getGame() {
-        //Integer tournyId = 160189;  // the harvest
+        //Integer tournyId = 160189;  // the harvest  // arena id congo 161603
         Integer tournyId = 129750; // midieval madness tourny
 
         String gameName = gamesApi.getGameName(tournyId, 1531986);

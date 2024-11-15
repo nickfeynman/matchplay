@@ -15,9 +15,29 @@
  */
 package com.example.matchplay.api;
 
-public record BestScoresDisplay(String name, String score, String points, String currentPlayerName) {
-    // Create a constructor that doesn't require currentPlayerName for backward compatibility
-    public BestScoresDisplay(String name, String score, String points) {
-        this(name, score, points, "");
-    }
-}
+import java.time.ZonedDateTime;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+public record QueueEntry(
+        @JsonProperty("queueId")
+        long queueId,
+
+        @JsonProperty("tournamentId")
+        long tournamentId,
+
+        @JsonProperty("arenaId")
+        long arenaId,
+
+        @JsonProperty("roundId")
+        Long roundId,
+
+        @JsonProperty("playerId")
+        long playerId,
+
+        @JsonProperty("index")
+        int index
+) {}

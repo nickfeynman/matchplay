@@ -17,4 +17,8 @@ public interface TournamentService {
     List<BestScoresDisplay> getBestScoresForArena(Integer tournamentId, Integer arenaId);
 
     void setActivePinId(Integer pinId);
+
+    String getCurrentPlayerNameForActivePinId();
+
+    String getCurrentPlayerName(Integer tournamentId, Integer arenaId);
 }

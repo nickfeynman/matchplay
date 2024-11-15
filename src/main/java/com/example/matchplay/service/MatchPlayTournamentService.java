@@ -2,6 +2,9 @@ package com.example.matchplay.service;
 
 import com.example.matchplay.api.BestScoresDisplay;
 import com.example.matchplay.api.MatchPlayApi;
+import com.example.matchplay.api.QueueApi;
+import com.example.matchplay.api.QueueDataResponse;
+import com.example.matchplay.api.QueueEntry;
 import com.example.matchplay.api.RoundDisplay;
 import com.example.matchplay.api.SinglePlayerGame;
 import com.example.matchplay.api.SinglePlayerGameApi;
@@ -30,13 +33,16 @@ public class MatchPlayTournamentService implements TournamentService {
 
     private SinglePlayerGameApi singlePlayerGameApi;
 
+    private QueueApi queueApi;
+
     private Integer activePinId = 1;
 
-    public MatchPlayTournamentService(MatchPlayApi matchPlayApi, SinglePlayerGameApi singlePlayerGameApi, MatchPlayConfigurationProperties matchPlayConfigurationProperties) {
+    public MatchPlayTournamentService(MatchPlayApi matchPlayApi, SinglePlayerGameApi singlePlayerGameApi, QueueApi queueApi, MatchPlayConfigurationProperties matchPlayConfigurationProperties) {
         this.matchPlayApi = matchPlayApi;
         this.matchPlayConfigurationProperties = matchPlayConfigurationProperties;
         this.gameNameService = new GameNameService();
         this.singlePlayerGameApi = singlePlayerGameApi;
+        this.queueApi = queueApi;
     }
 
 
@@ -97,8 +103,62 @@ public class MatchPlayTournamentService implements TournamentService {
         return getBestScoresForArena(tournamentId, arenaId);
     }
 
+
+    @Override
+    public String getCurrentPlayerNameForActivePinId() {
+        // Get the game name from the active pin ID
+        String gameName = this.gameNameService.getGameNameByPosition(getActivePinId());
+        if (!GameNameService.contains(gameName)) {
+            logger.warn("Game name {} not found in valid list of games", gameName);
+            return "";
+        }
+
+        // Convert game name to arena ID
+        int arenaId = gameNameService.getArenaIdByPosition(getActivePinId());
+
+        return getCurrentPlayerName(matchPlayConfigurationProperties.getTournamentId(), arenaId);
+    }
+
+    public String getCurrentPlayerName(Integer tournamentId, Integer arenaId) {
+        // Get queue data for the tournament
+        QueueDataResponse queueData = queueApi.getQueues(tournamentId);
+
+        // Get queue entries for the specific arena
+        List<QueueEntry> arenaEntries = queueData.arenaQueues().get(String.valueOf(arenaId));
+
+        // If no entries found, return empty string
+        if (arenaEntries == null || arenaEntries.isEmpty()) {
+            logger.debug("No queue entries found for arena {}", arenaId);
+            return "";
+        }
+
+        // Find entry with lowest index
+        QueueEntry currentEntry = arenaEntries.stream()
+                .min(Comparator.comparingInt(QueueEntry::index))
+                .orElse(null);
+
+        // If no valid entry found, return empty string
+        if (currentEntry == null) {
+            return "";
+        }
+
+        try {
+            // Convert player ID to user ID
+            int userId = this.matchPlayApi.getTournamentApi()
+                    .getUserIdFromPlayerId((int) currentEntry.playerId(), tournamentId);
+
+            // Get and return the user name
+            var fullName = this.matchPlayApi.getUserApi().getUserName(userId);
+            return MatchPlayApi.abbreviateLastName(fullName);
+        } catch (Exception e) {
+            logger.error("Error getting user name for player ID {}", currentEntry.playerId(), e);
+            return "";
+        }
+    }
+
     public List<BestScoresDisplay> getBestScoresForArena(Integer tournamentId, Integer arenaId) {
         List<SinglePlayerGame> games = singlePlayerGameApi.getSinglePlayerGames(tournamentId, arenaId);
+        String currentPlayerName = getCurrentPlayerName(tournamentId, arenaId);
 
         return games.stream()
                 .filter(g -> g.bestGame() && !g.voided())
@@ -118,7 +178,8 @@ public class MatchPlayTournamentService implements TournamentService {
                     return new BestScoresDisplay(
                             abbreviatedName,
                             formattedScore,
-                            game.points() != null ? game.points() : ""
+                            game.points() != null ? game.points() : "",
+                            currentPlayerName
                     );
                 })
                 .filter(Objects::nonNull)

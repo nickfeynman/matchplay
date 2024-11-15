@@ -15,9 +15,12 @@
  */
 package com.example.matchplay.api;
 
-public record BestScoresDisplay(String name, String score, String points, String currentPlayerName) {
-    // Create a constructor that doesn't require currentPlayerName for backward compatibility
-    public BestScoresDisplay(String name, String score, String points) {
-        this(name, score, points, "");
-    }
-}
+import java.util.List;
+import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record QueueDataResponse(
+        @JsonProperty("data")
+        Map<String, List<QueueEntry>> arenaQueues
+) {}

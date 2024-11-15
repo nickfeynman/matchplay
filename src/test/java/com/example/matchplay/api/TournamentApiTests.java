@@ -15,9 +15,28 @@
  */
 package com.example.matchplay.api;
 
-public record BestScoresDisplay(String name, String score, String points, String currentPlayerName) {
-    // Create a constructor that doesn't require currentPlayerName for backward compatibility
-    public BestScoresDisplay(String name, String score, String points) {
-        this(name, score, points, "");
+import org.junit.jupiter.api.Test;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+public class TournamentApiTests {
+
+    @Autowired
+    private TournamentApi tournamentApi;
+
+    @Autowired
+    private UserApi userApi;
+
+    @Test
+    void userIdFromPlayerId() {
+
+        var userId = this.tournamentApi.getUserIdFromPlayerId(333492, 160189);
+
+        String userName = this.userApi.getUserName(userId);
+
+        System.out.println(userName);
+
     }
 }

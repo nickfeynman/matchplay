@@ -2,6 +2,7 @@ package com.example.matchplay.configuration;
 
 import com.example.matchplay.api.GamesApi;
 import com.example.matchplay.api.MatchPlayApi;
+import com.example.matchplay.api.QueueApi;
 import com.example.matchplay.api.SinglePlayerGameApi;
 import com.example.matchplay.api.StandingsApi;
 import com.example.matchplay.api.TournamentApi;
@@ -26,9 +27,11 @@ public class AppConfiguration {
     @Bean
     public TournamentService tournamentService(MatchPlayApi matchPlayApi,
                                                SinglePlayerGameApi singlePlayerGameApi,
+                                               QueueApi queueApi,
                                                MatchPlayConfigurationProperties matchPlayConfigurationProperties) {
         return new MatchPlayTournamentService(matchPlayApi,
                 singlePlayerGameApi,
+                queueApi,
                 matchPlayConfigurationProperties);
     }
 

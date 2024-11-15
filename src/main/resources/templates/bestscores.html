@@ -83,6 +83,12 @@
 <div class="container">
     <h1>Best Scores</h1>
 
+    <!-- Current Player Display -->
+    <div class="current-player" th:if="${!#lists.isEmpty(bestScores)}">
+        <span>Current Player: </span>
+        <span th:text="${bestScores[0].currentPlayerName}"></span>
+    </div>
+    
     <div th:if="${!#lists.isEmpty(bestScores)}">
         <table>
             <thead>

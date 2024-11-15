@@ -26,6 +26,20 @@ public class MatchPlayTournamentServiceTest {
     @Autowired
     private MatchPlayConfigurationProperties matchPlayConfigurationProperties;
 
+
+    private static final Integer TEST_TOURNAMENT_ID = 160189;  // harvest
+    private static final Integer TEST_ARENA_ID = 161605;  // indy
+    @Test
+    void printCurrentPlayerName() {
+        String currentPlayer = ((MatchPlayTournamentService) tournamentService)
+                .getCurrentPlayerName(TEST_TOURNAMENT_ID, TEST_ARENA_ID);
+
+        logger.info("\n\nCurrent player for Tournament {} Arena {} is: '{}'\n",
+                TEST_TOURNAMENT_ID,
+                TEST_ARENA_ID,
+                currentPlayer);
+    }
+
     @Test
     public void testTournamentService() {
         assertThat(tournamentService).isNotNull();
